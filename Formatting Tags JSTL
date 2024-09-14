@@ -1,0 +1,56 @@
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ page import="java.util.Date" %>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>JSTL Formatting Tags Example</title>
+</head>
+<body>
+    <h1>JSTL Formatting Tags Example</h1>
+
+    <!-- Initialize current date -->
+    <%
+        Date currentDate = new Date();
+        request.setAttribute("currentDate", currentDate);
+    %>
+
+    <!-- fmt:formatNumber -->
+    <h2>fmt:formatNumber</h2>
+    <p>Number (default format): <fmt:formatNumber value="1234567.89" /></p>
+    <p>Number (currency format): <fmt:formatNumber value="1234567.89" type="currency" /></p>
+    <p>Number (percent format): <fmt:formatNumber value="0.89" type="percent" /></p>
+    <p>Number (integer format): <fmt:formatNumber value="1234567.89" type="number" maxFractionDigits="0" /></p>
+
+    <!-- fmt:formatDate -->
+    <h2>fmt:formatDate</h2>
+    <fmt:setLocale value="en_US" />
+    <p>Date (default format): <fmt:formatDate value="${currentDate}" /></p>
+    <p>Date (custom format): <fmt:formatDate value="${currentDate}" pattern="dd-MM-yyyy HH:mm:ss" /></p>
+
+    <!-- fmt:parseNumber -->
+    <h2>fmt:parseNumber</h2>
+    <fmt:setLocale value="en_US" />
+    <fmt:parseNumber var="parsedNumber" value="1,234,567.89" />
+    <p>Parsed Number: ${parsedNumber}</p>
+
+    <!-- fmt:parseDate -->
+    <h2>fmt:parseDate</h2>
+    <fmt:parseDate var="parsedDate" value="25-12-2024 15:30:45" pattern="dd-MM-yyyy HH:mm:ss" />
+    <p>Parsed Date: <fmt:formatDate value="${parsedDate}" pattern="yyyy/MM/dd HH:mm:ss" /></p>
+
+    <!-- fmt:bundle and fmt:message -->
+    <h2>fmt:bundle and fmt:message</h2>
+    <fmt:setBundle basename="messages" var="msgBundle" />
+    <fmt:message key="greeting" bundle="${msgBundle}" />
+    <p>Localized Message: <fmt:message key="greeting" bundle="${msgBundle}" /></p>
+
+    <!-- fmt:setLocale and fmt:timeZone -->
+    <h2>fmt:setLocale and fmt:timeZone</h2>
+    <fmt:setLocale value="fr_FR" />
+    <p>Date in French locale: <fmt:formatDate value="${parsedDate}" pattern="EEEE, dd MMMM yyyy" /></p>
+    <fmt:setTimeZone value="GMT+2" />
+    <p>Date in GMT+2 timezone: <fmt:formatDate value="${parsedDate}" pattern="dd-MM-yyyy HH:mm:ss z" /></p>
+
+</body>
+</html>
