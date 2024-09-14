@@ -79,3 +79,17 @@ public class CalculateAreaServlet extends HttpServlet {
         dispatcher.forward(request, response);
     }
 }
+
+
+
+//web.xml
+<web-app>
+    <servlet>
+        <servlet-name>CalculateAreaServlet</servlet-name>
+        <servlet-class>com.area.CalculateAreaServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>CalculateAreaServlet</servlet-name>
+        <url-pattern>/calculateArea</url-pattern>
+    </servlet-mapping>
+</web-app>
