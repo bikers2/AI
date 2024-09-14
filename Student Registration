@@ -1,0 +1,49 @@
+//index.jsp
+
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <title>JSP Page</title>
+    </head>
+    <body>
+        <%@page import="java.sql.*"%>
+
+        <%
+            String str1 = request.getParameter("t1");
+            String str2 = request.getParameter("t2");
+            Connection conn = null;
+            PreparedStatement ps = null;
+            boolean isInserted = false;
+            try {
+                Class.forName("com.mysql.cj.jdbc.Driver");
+                conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/jdbc?useSSL=false&allowPublicKeyRetrieval=true","root","admin");
+                ps = conn.prepareStatement("INSERT INTO students (fname, lname) VALUES (?, ?)");
+                ps.setString(1, str1);
+                ps.setString(2, str2);
+                int rowsAffected = ps.executeUpdate();
+                if (rowsAffected > 0) {
+                    isInserted = true;
+                }
+            } catch (Exception e) {
+                out.println("Error: " + e.getMessage());
+                e.printStackTrace();
+            } finally {
+                if (ps != null) try { ps.close(); } catch (SQLException ignore) {}
+                if (conn != null) try { conn.close(); } catch (SQLException ignore) {}
+            }
+        %>
+        <h1>Registration</h1>
+        <form method="post">
+            First Name: <input type="text" name="t1"><br>
+            Last Name: <input type="text" name="t2"><br>
+            <input type="submit" value="OK">
+        </form>
+        <%
+            if (isInserted) {
+                out.println("<p>Data successfully inserted!</p>");
+            }
+        %>
+    </body>
+</html>
