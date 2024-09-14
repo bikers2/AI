@@ -1,0 +1,70 @@
+//index.jsp
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Palindrome Checker</title>
+</head>
+<body>
+    <h2>Check if a number or a string is a palindrome</h2>
+    <form action="PalindromeServlet" method="post">
+        <label for="inputValue">Enter number or string:</label>
+        <input type="text" id="inputValue" name="inputValue" required>
+        <br><br>
+        <input type="submit" value="Check">
+        <p>${message}</p>
+    </form>
+</body>
+</html>
+
+
+
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.RequestDispatcher;
+import java.io.*;
+@WebServlet("/PalindromeServlet")
+public class PalindromeServlet extends HttpServlet {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String input = request.getParameter("inputValue");
+        String message;
+        if (isPalindrome(input)) {
+            message = "\"" + input + "\" is a palindrome!";
+        } else {
+            message = "\"" + input + "\" is not a palindrome!";
+        }
+        request.setAttribute("message", message);
+        RequestDispatcher dispatcher = request.getRequestDispatcher("index.jsp");
+        dispatcher.forward(request, response);
+        
+    }
+    private boolean isPalindrome(String input) {
+        String reversed = new StringBuilder(input).reverse().toString();
+        return input.equals(reversed);
+    }
+}
+
+
+
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="3.0" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
+    <servlet>
+        <servlet-name>PalindromeServlet</servlet-name>
+        <servlet-class>PalindromeServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>PalindromeServlet</servlet-name>
+        <url-pattern>/PalindromeServlet</url-pattern>
+    </servlet-mapping>
+    <session-config>
+        <session-timeout>
+            30
+        </session-timeout>
+    </session-config>
+    <welcome-file-list>
+        <welcome-file>index.jsp</welcome-file>
+    </welcome-file-list>
+</web-app>
