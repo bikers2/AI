@@ -1,0 +1,94 @@
+//index.jsp
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@page import="javax.naming.*, javax.ejb.*, java.util.*" %>
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <title>Currency Convertor</title>
+    </head>
+    <body>
+        <h2>Currency Convertor</h2>
+        <form method="post" action="ConvertCurrencyServlet">
+            Amount: <input type="text" name="amount"><br><br>
+            Currency :
+            <select name="currency">
+                <option value="USD">Dollar ($)</option>
+                <option value="EUR">Euro </option>
+                <option value="GBP">Pound </option>
+            </select>
+            <input type="submit" value="Convert into INR">
+        </form>
+    </body>
+</html>
+
+
+
+
+package com.converter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+@WebServlet("/ConvertCurrencyServlet")
+public class ConvertCurrencyServlet extends HttpServlet {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException
+    {
+        try {
+            InitialContext context = new InitialContext();
+            CurrencyConverterBeanLocalLocal converter = (CurrencyConverterBeanLocalLocal) context.lookup("java:module/CurrencyConverterBean");
+
+            double amount = Double.parseDouble(request.getParameter("amount"));
+            String currency = request.getParameter("currency");
+
+            double convertedAmount = converter.convertToINR(amount, currency);
+
+            response.getWriter().println("Converted Amount in INR: " + convertedAmount);
+
+        } catch (NamingException | NumberFormatException e) {
+            e.printStackTrace();
+            response.getWriter().println("Error: " + e.getMessage());
+   
+        }
+    }
+}
+
+
+package com.converter;
+import javax.ejb.Stateless;
+@Stateless
+public class CurrencyConverterBean implements CurrencyConverterBeanLocalLocal {
+    @Override
+    public double convertToINR(double amount,String currency)
+    {
+        double rate=0;
+        switch(currency){
+            case "USD":
+                rate=83.0;
+                break;
+            case "EUR":
+                rate=89.0;
+                break;
+            case "GBP":
+                rate=103.0;
+                break;
+        }
+        return amount*rate;
+    }
+}
+
+
+
+package com.converter;
+import javax.ejb.Local;
+@Local
+public interface CurrencyConverterBeanLocalLocal {
+    public double convertToINR(double amount,String currency);
+}
+
