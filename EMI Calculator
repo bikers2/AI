@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>EMI Calculator</title>
+</head>
+<body>
+    <h2>Calculate Your EMI</h2>
+    <form action="calculateEMI" method="get">
+        <label>Principal Amount (?):</label>
+        <input type="number" name="principal" step="0.01" required><br><br>
+
+        <label>Annual Interest Rate (%):</label>
+        <input type="number" name="annualRate" step="0.01" required><br><br>
+
+        <label>Loan Tenure (Months):</label>
+        <input type="number" name="months" required><br><br>
+
+        <input type="submit" value="Calculate EMI">
+    </form>
+</body>
+</html>
+
+
+
+package com.emi;
+import javax.ejb.Stateless;
+@Stateless
+public class EMICalculatorBean implements EMICalculatorRemote {
+    @Override
+    public double calculateEMI(double principal, double annualRate, int months) {
+        // Convert annual interest rate to monthly interest rate in decimal form
+        double monthlyRate = annualRate / (12 * 100);
+        return (principal * monthlyRate * Math.pow(1 + monthlyRate, months)) / 
+               (Math.pow(1 + monthlyRate, months) - 1);
+    }
+}
+
+
+
+package com.emi;
+import javax.ejb.Remote;
+@Remote
+public interface EMICalculatorRemote {
+    double calculateEMI(double principal, double annualRate, int months);
+}
+
+
+
+package com.emi.web;
+import com.emi.EMICalculatorRemote;
+import java.io.IOException;
+import javax.ejb.EJB;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+@WebServlet("/calculateEMI")
+public class EMIServlet extends HttpServlet {
+    @EJB
+    private EMICalculatorRemote emiCalculator;
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        // Get input parameters
+        double principal = Double.parseDouble(request.getParameter("principal"));
+        double annualRate = Double.parseDouble(request.getParameter("annualRate"));
+        int months = Integer.parseInt(request.getParameter("months"));
+        // Calculate EMI
+        double emi = emiCalculator.calculateEMI(principal, annualRate, months);
+        // Display the result
+        response.setContentType("text/html;charset=UTF-8");
+        response.getWriter().write("<h3>Calculated EMI: " + emi + "</h3>");
+    }
+}
