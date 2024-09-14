@@ -1,0 +1,101 @@
+package com.interest;
+import javax.ejb.Stateless;
+@Stateless
+public class InterestCalculatorBean implements InterestCalculatorRemote {
+    // Method to calculate Simple Interest
+    @Override
+    public double calculateSimpleInterest(double principal, double rate, int time) {
+        return (principal * rate * time) / 100;
+    }
+    // Method to calculate Compound Interest
+    @Override
+    public double calculateCompoundInterest(double principal, double rate, int time, int n) {
+        return principal * Math.pow((1 + rate / (n * 100)), n * time) - principal;
+    }
+}
+
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Interest Calculator</title>
+</head>
+<body>
+    <h2>Calculate Simple or Compound Interest</h2>
+    <form action="calculateInterest" method="get">
+        <label>Principal Amount:</label>
+        <input type="number" name="principal" step="0.01" required><br><br>
+        <label>Rate of Interest (%):</label>
+        <input type="number" name="rate" step="0.01" required><br><br>
+        <label>Time (in years):</label>
+        <input type="number" name="time" required><br><br>
+        <label>Interest Type:</label>
+        <select name="type" required>
+            <option value="simple">Simple Interest</option>
+            <option value="compound">Compound Interest</option>
+        </select><br><br>
+        <div id="compound-options" style="display: none;">
+            <label>Number of times interest applied per year:</label>
+            <input type="number" name="n"><br><br>
+        </div>
+        <input type="submit" value="Calculate Interest">
+    </form>
+    <script>
+        // Toggle visibility for compound interest options
+        document.querySelector('select[name="type"]').addEventListener('change', function() {
+            var compoundOptions = document.getElementById('compound-options');
+            if (this.value === 'compound') {
+                compoundOptions.style.display = 'block';
+            } else {
+                compoundOptions.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>
+
+
+
+package com.interest;
+import javax.ejb.Remote;
+@Remote
+public interface InterestCalculatorRemote {
+    double calculateSimpleInterest(double principal, double rate, int time);
+    double calculateCompoundInterest(double principal, double rate, int time, int n);
+}
+
+
+
+package com.interest.web;
+import com.interest.InterestCalculatorRemote;
+import java.io.IOException;
+import javax.ejb.EJB;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+@WebServlet("/calculateInterest")
+public class InterestServlet extends HttpServlet {
+    @EJB
+    private InterestCalculatorRemote interestCalculator;
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        // Get input parameters
+        double principal = Double.parseDouble(request.getParameter("principal"));
+        double rate = Double.parseDouble(request.getParameter("rate"));
+        int time = Integer.parseInt(request.getParameter("time"));
+        String type = request.getParameter("type");
+        double result;
+        if ("simple".equalsIgnoreCase(type)) {
+            result = interestCalculator.calculateSimpleInterest(principal, rate, time);
+        } else {
+            int n = Integer.parseInt(request.getParameter("n")); // Number of times interest applied per time period
+            result = interestCalculator.calculateCompoundInterest(principal, rate, time, n);
+        }
+        // Display result
+        response.setContentType("text/html;charset=UTF-8");
+        response.getWriter().write("<h3>Calculated Interest: " + result + "</h3>");
+    }
+}
