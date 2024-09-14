@@ -15,6 +15,7 @@ public class InterestCalculatorBean implements InterestCalculatorRemote {
 }
 
 
+index.jsp
 <!DOCTYPE html>
 <html>
 <head>
