@@ -1,0 +1,81 @@
+//index.jsp
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Area Calculation</title>
+</head>
+<body>
+    <h1>Calculate Area</h1>
+    <!-- Form for Rectangle Area -->
+    <h2>Rectangle</h2>
+    <form action="calculateArea" method="post">
+        <label for="length">Length:</label>
+        <input type="number" name="length" id="length" required>
+        <br>
+        <label for="width">Width:</label>
+        <input type="number" name="width" id="width" required>
+        <br>
+        <input type="hidden" name="shape" value="rectangle">
+        <input type="submit" value="Calculate Area">
+    </form>
+    <hr>
+    <!-- Form for Circle Area -->
+    <h2>Circle</h2>
+    <form action="calculateArea" method="post">
+        <label for="radius">Radius:</label>
+        <input type="number" name="radius" id="radius" required>
+        <br>
+        <input type="hidden" name="shape" value="circle">
+        <input type="submit" value="Calculate Area">
+    </form>
+</body>
+</html>
+
+
+//areaResult.jsp
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Area Result</title>
+</head>
+<body>
+    <h1>Area Calculation Result</h1>
+    <p>Shape: <c:out value="${shape}"/></p>
+    <p>Area: <c:out value="${area}"/> square units</p>
+    <form action="index.jsp" method="get">
+        <input type="submit" value="Back to Home">
+    </form>
+</body>
+</html>
+
+
+
+package com.area;
+import java.io.IOException;
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+public class CalculateAreaServlet extends HttpServlet {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        String shape = request.getParameter("shape");
+        if ("rectangle".equals(shape)) {
+            double length = Double.parseDouble(request.getParameter("length"));
+            double width = Double.parseDouble(request.getParameter("width"));
+            double area = length * width;
+            request.setAttribute("shape", "Rectangle");
+            request.setAttribute("area", area);
+        } else if ("circle".equals(shape)) {
+            double radius = Double.parseDouble(request.getParameter("radius"));
+            double area = Math.PI * radius * radius;
+            request.setAttribute("shape", "Circle");
+            request.setAttribute("area", area);
+        }
+        RequestDispatcher dispatcher = request.getRequestDispatcher("areaResult.jsp");
+        dispatcher.forward(request, response);
+    }
+}
