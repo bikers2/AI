@@ -1,0 +1,67 @@
+//index.jsp
+<html>
+<body>
+    <form action="CheckVowelsConsonantsServlet" method="post">
+        <label for="text">Enter text:</label>
+        <input type="text" id="text" name="text">
+        <input type="submit" value="Submit">
+    </form>
+</body>
+</html>
+
+
+import java.io.IOException;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+@WebServlet("/CheckVowelsConsonantsServlet")
+public class CheckVowelsConsonantsServlet extends HttpServlet {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) 
+            throws ServletException, IOException {
+        String input = request.getParameter("text");
+        if (input == null || input.isEmpty()) {
+            response.getWriter().println("Please provide a text input.");
+            return;
+        }
+        StringBuilder vowels = new StringBuilder();
+        StringBuilder consonants = new StringBuilder();
+        String inputLower = input.toLowerCase();
+        for (char ch : inputLower.toCharArray()) {
+            if (Character.isLetter(ch)) {
+                if ("aeiou".indexOf(ch) >= 0) {
+                    vowels.append(ch).append(" ");
+                } else {
+                    consonants.append(ch).append(" ");
+                }
+            }
+        }
+        response.setContentType("text/html");
+        response.getWriter().println("<html><body>");
+        response.getWriter().println("<h2>Input Text: " + input + "</h2>");
+        response.getWriter().println("<h3>Vowels: " + vowels.toString() + "</h3>");
+        response.getWriter().println("<h3>Consonants: " + consonants.toString() + "</h3>");
+        response.getWriter().println("</body></html>");
+    }
+}
+
+
+
+//web.xml
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="3.0" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
+    <servlet>
+        <servlet-name>CheckVowelsConsonantsServlet</servlet-name>
+        <servlet-class>CheckVowelsConsonantsServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>CheckVowelsConsonantsServlet</servlet-name>
+        <url-pattern>/CheckVowelsConsonantsServlet</url-pattern>
+    </servlet-mapping>
+    <session-config>
+        <session-timeout>
+            30
+        </session-timeout>
+    </session-config>
+</web-app>
