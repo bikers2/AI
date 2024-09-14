@@ -1,0 +1,66 @@
+import java.io.IOException;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+@WebServlet("/CalculatorServlet")
+public class CalculatorServlet extends HttpServlet {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        // Fetching input from JSP form
+        double num1 = Double.parseDouble(request.getParameter("num1"));
+        double num2 = Double.parseDouble(request.getParameter("num2"));
+        String operation = request.getParameter("operation");
+        double result = 0.0;
+        // Basic calculator logic
+        switch (operation) {
+            case "add":
+                result = num1 + num2;
+                break;
+            case "subtract":
+                result = num1 - num2;
+                break;
+            case "multiply":
+                result = num1 * num2;
+                break;
+            case "divide":
+                if (num2 != 0) {
+                    result = num1 / num2;
+                } else {
+                    request.setAttribute("result", "Error: Division by zero");
+                    request.getRequestDispatcher("index.jsp").forward(request, response);
+                    return;
+                }
+                break;
+        }
+        // Pass the result back to the JSP page
+        request.setAttribute("result", result);
+        request.getRequestDispatcher("index.jsp").forward(request, response);
+    }
+}
+
+
+
+//index.jsp
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<html>
+<head>
+    <title>Simple Calculator</title>
+</head>
+<body>
+    <h1>Simple Calculator</h1>
+    <form action="CalculatorServlet" method="POST">
+        <input type="number" name="num1" placeholder="Enter first number" required>
+        <select name="operation" required>
+            <option value="add">+</option>
+            <option value="subtract">-</option>
+            <option value="multiply">*</option>
+            <option value="divide">/</option>
+        </select>
+        <input type="number" name="num2" placeholder="Enter second number" required>
+        <input type="submit" value="Calculate">
+    </form>
+    <h2>Result: ${result}</h2>
+</body>
+</html>
