@@ -1,0 +1,171 @@
+//index.xhtml
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core">
+<h:head>
+    <title>Customer Management</title>
+</h:head>
+<h:body>
+    <h:form>
+        <h:dataTable value="#{customerBean.customersList}" var="customer" border="1">
+            <h:column>
+                <f:facet name="header">Name</f:facet>
+                #{customer.name}
+            </h:column>
+            <h:column>
+                <f:facet name="header">Email</f:facet>
+                #{customer.email}
+            </h:column>
+            <h:column>
+                <h:commandLink value="Delete" action="#{customerBean.deleteCustomer(customer.name)}" />
+            </h:column>
+        </h:dataTable>
+    </h:form>
+    <h:form>
+        <h:panelGrid columns="2">
+            <h:outputLabel value="Name: " />
+            <h:inputText value="#{customerBean.name}" />
+            <h:outputLabel value="Email: " />
+            <h:inputText value="#{customerBean.email}" />
+            <h:commandButton value="Save" action="#{customerBean.saveCustomer}" />
+            <h:commandButton value="Update" action="#{customerBean.updateCustomer}" />
+        </h:panelGrid>
+    </h:form>
+</h:body>
+</html>
+
+
+
+import java.io.Serializable;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.List;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.SessionScoped;
+@ManagedBean
+@SessionScoped
+public class CustomerBean implements Serializable {
+    private String name;
+    private String email;
+    private List<CustomerBean> customersList;
+    // Getters and Setters
+    public String getName() {
+        return name;
+    }
+    public void setName(String name) {
+        this.name = name;
+    }
+    public String getEmail() {
+        return email;
+    }
+    public void setEmail(String email) {
+        this.email = email;
+    }
+    public List<CustomerBean> getCustomersList() {
+        customersList = new ArrayList<>();
+        try {
+            Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/jsfdb?useSSL=false&serverTimezone=UTC", "root", "admin");
+            PreparedStatement ps = conn.prepareStatement("SELECT * FROM customers");
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                CustomerBean customer = new CustomerBean();
+                customer.setName(rs.getString("name"));
+                customer.setEmail(rs.getString("email"));
+                customersList.add(customer);
+            }
+            conn.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return customersList;
+    }
+    public void saveCustomer() {
+        try {
+            Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/jsfdb?useSSL=false&serverTimezone=UTC", "root", "admin");
+            PreparedStatement ps = conn.prepareStatement("INSERT INTO customers (name, email) VALUES (?, ?)");
+            ps.setString(1, name);
+            ps.setString(2, email);
+            ps.executeUpdate();
+            conn.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    public void updateCustomer() {
+        try {
+            Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/jsfdb?useSSL=false&serverTimezone=UTC", "root", "admin");
+            PreparedStatement ps = conn.prepareStatement("UPDATE customers SET name = ?, email = ? WHERE name = ?");
+            ps.setString(1, name);
+            ps.setString(2, email);
+            ps.setString(3, name);
+            ps.executeUpdate();
+            conn.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    public void deleteCustomer(String name) {
+        try {
+            Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/jsfdb?useSSL=false&serverTimezone=UTC", "root", "admin");
+            PreparedStatement ps = conn.prepareStatement("DELETE FROM customers WHERE name = ?");
+            ps.setString(1, name);
+            ps.executeUpdate();
+            conn.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}
+
+
+//context.xml
+<Context>
+    <Resource name="jdbc/jsfdb"
+              auth="Container"
+              type="javax.sql.DataSource"
+              username="root"
+              password="admin"
+              driverClassName="com.mysql.cj.jdbc.Driver"
+              url="jdbc:mysql://localhost:3306/jsfdb?useSSL=false&serverTimezone=UTC"
+              maxActive="100"
+              maxIdle="30"
+              maxWait="10000"/>
+</Context>
+
+
+
+//web.xml
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="3.0" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
+    <context-param>
+        <param-name>javax.faces.PROJECT_STAGE</param-name>
+        <param-value>Development</param-value>
+    </context-param>
+    <servlet>
+        <servlet-name>Faces Servlet</servlet-name>
+        <servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>Faces Servlet</servlet-name>
+        <url-pattern>/faces/*</url-pattern>
+    </servlet-mapping>
+    <session-config>
+        <session-timeout>
+            30
+        </session-timeout>
+    </session-config>
+    <resource-ref>
+    <description>DB Connection</description>
+    <res-ref-name>jdbc/jsfdb</res-ref-name>
+    <res-type>javax.sql.DataSource</res-type>
+    <res-auth>Container</res-auth>
+    </resource-ref>
+    <welcome-file-list>
+        <welcome-file>faces/index.xhtml</welcome-file>
+    </welcome-file-list>
+</web-app>
