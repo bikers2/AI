@@ -1,0 +1,81 @@
+
+//index.jsp
+
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>JSTL Core Tags</title>
+</head>
+<body>
+    <h1>JSTL Core Tags Example</h1>
+
+    <!-- c:set and c:out -->
+    <h2>c:set and c:out</h2>
+    <c:set var="message" scope="session" value="Hello, World!" />
+    <p>Message: <c:out value="${message}" /></p>
+    
+    <!-- c:remove -->
+    <h2>c:remove</h2>
+    <c:remove var="message" scope="session" />
+    <p>Message: <c:out value="${message}" /></p>
+    
+    <!-- c:if -->
+    <h2>c:if</h2>
+    <c:if test="${message eq 'Hello, World!'}">
+        <p>The message is "Hello, World!"</p>
+    </c:if>
+
+    <!-- c:choose, c:when, c:otherwise -->
+    <h2>c:choose, c:when, c:otherwise</h2>
+    <c:choose>
+        <c:when test="${message eq 'Hello, World!'}">
+            <p>The message is still "Hello, World!"</p>
+        </c:when>
+        <c:otherwise>
+            <p>The message is something else.</p>
+        </c:otherwise>
+    </c:choose>
+
+    <!-- c:forEach -->
+    <h2>c:forEach</h2>
+    <c:set var="numbers" value="${[1, 2, 3, 4, 5]}" />
+    <ul>
+        <c:forEach var="num" items="${numbers}">
+            <li>Number: <c:out value="${num}" /></li>
+        </c:forEach>
+    </ul>
+
+    <!-- c:forTokens -->
+    <h2>c:forTokens</h2>
+    <c:set var="names" value="Alice,Bob,Charlie,David" />
+    <ul>
+        <c:forTokens var="name" items="${names}" delims=",">
+            <li>Name: <c:out value="${name}" /></li>
+        </c:forTokens>
+    </ul>
+
+    <!-- c:catch -->
+    <h2>c:catch</h2>
+    <c:catch var="exception">
+        <c:set var="result" value="${10 / 2}" />
+    </c:catch>
+    <c:if test="${exception != null}">
+        <p>An error occurred: <c:out value="${exception.message}" /></p>
+    </c:if>
+    <c:if test="${exception == null}">
+        <p>No error occurred. Result: <c:out value="${result}" /></p>
+    </c:if>
+
+    <!-- c:url and c:param -->
+    <h2>c:url and c:param</h2>
+    <c:url var="myUrl" value="anotherPage.jsp">
+        <c:param name="param1" value="value1" />
+        <c:param name="param2" value="value2" />
+    </c:url>
+    <p>Generated URL: <c:out value="${myUrl}" /></p>
+    <p><a href="${myUrl}">Go to Another Page</a></p>
+
+</body>
+</html>
