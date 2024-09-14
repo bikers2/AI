@@ -1,0 +1,97 @@
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>JSTL Function Tags Example</title>
+</head>
+<body>
+    <h1>JSTL Function Tags Example</h1>
+
+    <!-- fn:contains -->
+    <h2>fn:contains</h2>
+    <p>Does "Hello, World!" contain "World"? 
+        <c:out value="${fn:contains('Hello, World!', 'World')}" /></p>
+
+    <!-- fn:containsIgnoreCase -->
+    <h2>fn:containsIgnoreCase</h2>
+    <p>Does "Hello, World!" contain "world" (case insensitive)? 
+        <c:out value="${fn:containsIgnoreCase('Hello, World!', 'world')}" /></p>
+
+    <!-- fn:startsWith -->
+    <h2>fn:startsWith</h2>
+    <p>Does "Hello, World!" start with "Hello"? 
+        <c:out value="${fn:startsWith('Hello, World!', 'Hello')}" /></p>
+
+    <!-- fn:endsWith -->
+    <h2>fn:endsWith</h2>
+    <p>Does "Hello, World!" end with "World!"? 
+        <c:out value="${fn:endsWith('Hello, World!', 'World!')}" /></p>
+
+    <!-- fn:substring -->
+    <h2>fn:substring</h2>
+    <p>Substring of "Hello, World!" from index 7 to 12: 
+        <c:out value="${fn:substring('Hello, World!', 7, 12)}" /></p>
+
+    <!-- fn:substringAfter -->
+    <h2>fn:substringAfter</h2>
+    <p>Substring after "Hello, ": 
+        <c:out value="${fn:substringAfter('Hello, World!', 'Hello, ')}" /></p>
+
+    <!-- fn:substringBefore -->
+    <h2>fn:substringBefore</h2>
+    <p>Substring before ", World!": 
+        <c:out value="${fn:substringBefore('Hello, World!', ', World!')}" /></p>
+
+    <!-- fn:length -->
+    <h2>fn:length</h2>
+    <p>Length of "Hello, World!": 
+        <c:out value="${fn:length('Hello, World!')}" /></p>
+
+    <!-- fn:trim -->
+    <h2>fn:trim</h2>
+    <p>Trimmed string: 
+        <c:out value="${fn:trim('   Hello, World!   ')}" /></p>
+
+    <!-- fn:replace -->
+    <h2>fn:replace</h2>
+    <p>Replace "World" with "JSTL": 
+        <c:out value="${fn:replace('Hello, World!', 'World', 'JSTL')}" /></p>
+
+    <!-- fn:toLowerCase -->
+    <h2>fn:toLowerCase</h2>
+    <p>Lowercase: 
+        <c:out value="${fn:toLowerCase('Hello, World!')}" /></p>
+
+    <!-- fn:toUpperCase -->
+    <h2>fn:toUpperCase</h2>
+    <p>Uppercase: 
+        <c:out value="${fn:toUpperCase('Hello, World!')}" /></p>
+
+    <!-- Corrected fn:escapeXml -->
+    <h2>fn:escapeXml</h2>
+    <p>Escaped XML: 
+        <c:out value="${fn:escapeXml('<Hello> & \'World\'')}" /></p>
+
+    <!-- fn:split -->
+    <h2>fn:split</h2>
+    <c:set var="words" value="${fn:split('apple,banana,cherry', ',')}" />
+    <p>Split "apple,banana,cherry" into a list:</p>
+    <ul>
+        <c:forEach var="word" items="${words}">
+            <li><c:out value="${word}" /></li>
+        </c:forEach>
+    </ul>
+
+    <!-- fn:join -->
+    <h2>fn:join</h2>
+    <p>Join the words list with a hyphen: 
+        <c:out value="${fn:join(words, '-')}" /></p>
+
+    <!-- fn:indexOf -->
+    <h2>fn:indexOf</h2>
+    <p>Index of "World" in "Hello, World!": 
+        <c:out value="${fn:indexOf('Hello, World!', 'World')}" /></p>
+
+</body>
+</html>
